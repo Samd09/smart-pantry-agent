@@ -464,6 +464,32 @@ def remove_user_allergy(allergy_name: str) -> Dict[str, Any]:
         return {"error": f"Failed to remove allergy: {e}"}
 
 
+def search_restaurants(query: str = "") -> List[Dict[str, Any]]:
+    """Search for real-time sustainable, organic, and dietary-friendly restaurants and bakeries from the Firestore database.
+
+    Args:
+        query: Optional search keyword or cuisine type (e.g. 'organic', 'sourdough', 'seafood', 'bistro').
+
+    Returns:
+        List of restaurant dictionaries containing name, cuisine, rating, address, features, and popular dishes.
+    """
+    try:
+        docs = db.collection("restaurants").stream()
+        results = []
+        q_lower = query.lower().strip()
+        for doc in docs:
+            data = doc.to_dict()
+            if not q_lower:
+                results.append(data)
+            else:
+                combined = f"{data.get('name','')} {data.get('cuisine','')} {' '.join(data.get('features',[]))}".lower()
+                if q_lower in combined:
+                    results.append(data)
+        return results
+    except Exception as e:
+        return [{"error": f"Failed to search restaurants: {e}"}]
+
+
 schema_manager = A2uiSchemaManager(
     version="0.8",
     catalogs=[BasicCatalog.get_config("0.8")],
@@ -544,6 +570,7 @@ root_agent = Agent(
         get_user_allergies,
         save_user_allergy,
         remove_user_allergy,
+        search_restaurants,
         load_memory_tool.load_memory_tool,
         preload_memory_tool.preload_memory_tool,
     ],
