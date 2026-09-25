@@ -42,7 +42,7 @@ from a2a.types import (
     TransportProtocol,
 )
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 RESOURCE = os.environ.get(
@@ -194,6 +194,20 @@ async def chat(req: Request):
 
 
 STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+
+
+@app.get("/")
+async def serve_root():
+    return FileResponse(
+        os.path.join(STATIC_DIR, "index.html"),
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
+
+
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 
