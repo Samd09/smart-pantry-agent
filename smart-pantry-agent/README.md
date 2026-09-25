@@ -1,8 +1,8 @@
-# 🌱 Smart Pantry & Zero-Waste Chef
+# 🍽️ Welcome to the Food-Zone by Samarpan
 
 An intelligent AI culinary assistant built with Google's **Agent Development Kit (ADK)** and deployed on **Google Cloud Agent Engine**.
 
-![Smart Pantry & Zero-Waste Chef Demo](./demo.gif)
+![Welcome to the Food-Zone by Samarpan Demo](./demo.gif)
 
 ---
 

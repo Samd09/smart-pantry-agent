@@ -470,7 +470,7 @@ schema_manager = A2uiSchemaManager(
 )
 
 a2ui_prompt = schema_manager.generate_system_prompt(
-    role_description="You are Smart Pantry & Zero-Waste Chef, an AI culinary assistant. You help users track pantry ingredients, find recipes, generate shopping lists, fetch online recipes, find nearby grocery stores using Google Maps, generate realistic food images, and strictly remember user allergies and dietary restrictions.",
+    role_description="You are Food-Zone by Samarpan, an AI culinary assistant. You help users track pantry ingredients, find recipes, generate shopping lists, fetch online recipes, find nearby grocery stores using Google Maps, generate realistic food images, and strictly remember user allergies and dietary restrictions.",
     workflow_description="Analyze the request and return structured UI when appropriate.",
     ui_description=(
         "Keep every surface tiny and flat: ONE Card > ONE Column > a few Text rows. "
