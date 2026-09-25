@@ -65,9 +65,10 @@ code_executor = AgentEngineSandboxCodeExecutor(
 
 def get_pantry_inventory() -> List[Dict[str, Any]]:
     """Retrieve all current pantry items from the Firestore database, sorted by days until expiration.
+    Each item includes name, category, quantity, unit, expiration status, total_calories, and macronutrients.
 
     Returns:
-        List of pantry item dictionaries containing item details like name, category, quantity, unit, and expiration status.
+        List of pantry item dictionaries containing item details like name, category, quantity, unit, total_calories, macronutrients, and expiration status.
     """
     docs = db.collection("pantry_items").stream()
     items = []
@@ -84,6 +85,7 @@ def add_pantry_item(
     quantity: float,
     unit: str,
     days_until_expiration: int,
+    calories_per_unit: float = 100.0,
 ) -> str:
     """Add a new ingredient/item to the user's pantry inventory in Firestore.
 
@@ -93,29 +95,34 @@ def add_pantry_item(
         quantity: Amount of the item.
         unit: Unit of measurement (e.g. 'items', 'grams', 'liters', 'cups').
         days_until_expiration: Number of days remaining before expiration.
+        calories_per_unit: Estimated calories per unit quantity.
 
     Returns:
         Confirmation message string.
     """
     item_id = name.lower().replace(" ", "_")
+    total_cal = round(quantity * calories_per_unit, 1)
     item_data = {
         "id": item_id,
         "name": name,
         "category": category,
         "quantity": quantity,
         "unit": unit,
+        "calories_per_unit": calories_per_unit,
+        "total_calories": total_cal,
         "days_until_expiration": days_until_expiration,
         "date_added": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"),
     }
     db.collection("pantry_items").document(item_id).set(item_data)
-    return f"Successfully added {quantity} {unit} of '{name}' to your pantry (expires in {days_until_expiration} days)."
+    return f"Successfully added {quantity} {unit} of '{name}' ({total_cal} kcal) to your pantry (expires in {days_until_expiration} days)."
 
 
 def search_recipes_by_pantry() -> List[Dict[str, Any]]:
     """Search for recipes in Firestore that can be prepared using available pantry ingredients.
+    Includes total_calories, calorie_breakdown for each ingredient, and nutrition_summary (protein, carbs, fat, fiber).
 
     Returns:
-        List of matching recipe dictionaries with title, ingredients, instructions, prep time, and difficulty.
+        List of matching recipe dictionaries with title, total_calories, calorie_breakdown, nutrition_summary, ingredients, instructions, prep time, and difficulty.
     """
     docs = db.collection("recipes").stream()
     return [doc.to_dict() for doc in docs]
